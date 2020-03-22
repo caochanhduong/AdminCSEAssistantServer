@@ -17,8 +17,7 @@ mongo = PyMongo(app)
 def msg(code, mess=None):
     if code == 200 and mess is None:
         return jsonify({"code": 200, "value": True})
-    else:
-        return jsonify({"code": code, "message": mess}), code
+    return jsonify({"code": code, "message": mess}), code
 
 
 # In[14]:
@@ -60,8 +59,7 @@ def delete_activity(_id):
     if activity != None:
         result = mongo.db.activities.delete_one({"_id" : activity["_id"]})
         return jsonify({"code": 200, "message": "delete success"})
-    else:
-        return jsonify({"code":404,"message":"activity not found"})
+    return jsonify({"code":404,"message":"activity not found"})
 
 @app.route("/api/server-cse-assistant-admin/activities", methods=['GET'])
 def get_all_activities():
@@ -73,8 +71,7 @@ def get_all_activities():
         result.append(activity)
     if activity != None:
         return jsonify({"code": 200, "message": result})
-    else:
-        return jsonify({"code":404,"message":"activities not found"})
+    return jsonify({"code":404,"message":"activities not found"})
 
 @app.route("/api/server-cse-assistant-admin/activities", methods=['POST'])
 def add_activity():
@@ -85,8 +82,7 @@ def add_activity():
     result = mongo.db.activities.insert_one(activity)
     if result != None:
         return jsonify({"code": 200, "message": "insert success"})
-    else:
-        return jsonify({"code":400,"message":"insert fail"})
+    return jsonify({"code":400,"message":"insert fail"})
 
 @app.route("/api/server-cse-assistant-admin/activities", methods=['PUT'])
 def update_activity():
