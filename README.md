@@ -394,7 +394,7 @@ Example: /api/server-cse-assistant-admin/activities/page/1 (lấy trang 1)
     "current_page": 2,
     "per_page": 20,
     "total": 923,
-    "users": [
+    "activities": [
         {
             "_id": "5e593b18674aef8330ca6aea",
             "address": [],
@@ -466,7 +466,7 @@ Khi không có bài đăng nào trong database.
 ```json
 {
     "code":404,
-    "users": [],
+    "activities": [],
     "total":0,
     "per_page":20,
     "current_page":0
