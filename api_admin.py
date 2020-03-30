@@ -63,7 +63,7 @@ def activities_page(page):
         result.append(activity)
     if activity != None:
         return jsonify({"code": 200, "users": result,"total":total,"per_page":per_page,"current_page":current_page})
-    return jsonify({"code":404,"message":"activity not found"})
+    return jsonify({"code":404,"users": [],"total":0,"per_page":per_page,"current_page":current_page})
 
 @app.route("/api/server-cse-assistant-admin/activities/<_id>", methods=['DELETE'])
 def delete_activity(_id):
