@@ -366,3 +366,109 @@ Khi request không có key "activity"
     "message": "activity can not be None"
 }
 ```
+
+___
+# `GET /api/server-cse-assistant-admin/activities/page/:page`
+
+## Goals
+Lấy về các bài đăng theo số trang, mỗi trang 20 bài đăng.
+
+## Required Header
+
+## Param Request
+`
+page: số  thứ tự trang (đếm từ 1)
+`
+
+`
+Example: /api/server-cse-assistant-admin/activities/page/1 (lấy trang 1)
+`
+
+
+## Body Request
+
+## Success Response
+```json
+{
+    "code": 200,
+    "current_page": 2,
+    "per_page": 20,
+    "total": 923,
+    "users": [
+        {
+            "_id": "5e593b18674aef8330ca6aea",
+            "address": [],
+            "contact": [],
+            "holder": [
+                "đội ctxh",
+                "đội ctxh"
+            ],
+            "joiner": [],
+            "name_activity": [
+                "ngày cuối tuần của tôi",
+                "ngày cuối tuần của tôi",
+                "ngày cuối tuần của tôi"
+            ],
+            "name_place": [],
+            "register": [],
+            "reward": [
+                "biết được mùi hương của bùn đất , vị mặn của mồ hôi , cái lấm lem xi măng của một người thợ xây thực thụ",
+                "trải nghiệm bữa cơm của đại gia đình ctxh , đạm bạc , đơn sơ nhưng đầy ắp tình cảm"
+            ],
+            "time": [],
+            "time_work_place_mapping": [],
+            "type_activity": [
+                "chương trình",
+                "chương trình",
+                "chương trình"
+            ],
+            "works": [
+                "sinh hoạt sau giờ làm việc"
+            ]
+        },
+        {
+            "_id": "5e593b18674aef8330ca6aeb",
+            "address": [],
+            "contact": [],
+            "holder": [],
+            "joiner": [
+                "tự tin vào vốn kiến thức của bản thân",
+                "nghĩ mình có tố chất của một thủ lĩnh"
+            ],
+            "name_activity": [
+                "thủ lĩnh sinh viên 2019",
+                "thủ lĩnh sinh viên năm 2019",
+                "thủ lĩnh sinh viên năm 2019"
+            ],
+            "name_place": [],
+            "register": [
+                "các bài dự thi gửi về email",
+                "tiêu đề : thủ lĩnh sv"
+            ],
+            "reward": [
+                "được giấy chứng nhận của hội thi"
+            ],
+            "time": [],
+            "time_work_place_mapping": [],
+            "type_activity": [
+                "hội thi"
+            ],
+            "works": []
+        }
+    ]
+}
+```
+## Error Response
+
+`
+Khi không có bài đăng nào trong database.
+`
+```json
+{
+    "code":404,
+    "users": [],
+    "total":0,
+    "per_page":20,
+    "current_page":0
+}
+```
