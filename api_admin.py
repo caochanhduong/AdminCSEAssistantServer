@@ -49,6 +49,22 @@ def activity_detail(_id):
         return jsonify({"code": 200, "message": activity})
     return jsonify({"code":404,"message":"activity not found"})
 
+@app.route("/api/server-cse-assistant-admin/activities/page/<page>", methods=['GET'])
+def activities_page(page):
+    print(page)
+    total = mongo.db.activities.count()
+    per_page = 20
+    current_page = int(page)
+    activities = mongo.db.activities.find(limit = 20,skip = per_page*(current_page - 1))
+    result = []
+    #convert _id to string
+    for activity in activities:
+        activity["_id"] = str(activity["_id"])
+        result.append(activity)
+    if activity != None:
+        return jsonify({"code": 200, "users": result,"total":total,"per_page":per_page,"current_page":current_page})
+    return jsonify({"code":404,"message":"activity not found"})
+
 @app.route("/api/server-cse-assistant-admin/activities/<_id>", methods=['DELETE'])
 def delete_activity(_id):
     print(_id)
