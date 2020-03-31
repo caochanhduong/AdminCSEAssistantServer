@@ -95,10 +95,10 @@ def add_activity():
     if "activity" not in input_data:
         return jsonify({"code": 400, "message":"activity can not be None"})
     activity = input_data["activity"]
-    result = mongo.db.activities.insert_one(activity)
-    if result != None:
-        return jsonify({"code": 200, "message": "insert success"})
-    return jsonify({"code":400,"message":"insert fail"})
+    insert_id = mongo.db.activities.insert_one(activity).inserted_id
+    if insert_id != None:
+        return jsonify({"code": 200, "message": "insert success","id":str(insert_id)})
+    return jsonify({"code":400,"message":"insert fail","id":"null"})
 
 @app.route("/api/server-cse-assistant-admin/activities", methods=['PUT'])
 def update_activity():
