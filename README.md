@@ -258,9 +258,13 @@ Thêm 1 bài đăng.
 ```json
 {
     "code": 200,
-    "message": "insert success"
+    "message": "insert success",
+    "id":"5e593b11674aef8330ca6ad6"
 }
 ```
+`
+id: id của bài đăng vừa thêm.
+`
 ## Error Response
 
 `
@@ -470,5 +474,97 @@ Khi không có bài đăng nào trong database.
     "total":0,
     "per_page":20,
     "current_page":0
+}
+```
+
+___
+# `POST /api/server-cse-assistant-admin/activities/filter`
+
+## Goals
+`
+Lọc các bài đăng theo điều kiện, giới hạn trả về 20 bài đăng.
+`
+## Required Header
+
+## Param Request
+
+
+## Body Request
+```json
+{
+	"condition":{
+        "name_activity":["đêm vui tất niên tết ấm áp"],
+        "name_place":["sân cờ"]
+    }
+}
+```
+`
+condition: object json chứa key và value của các điều kiện (dạng key: list)
+`
+## Success Response
+```json
+{
+    "activities": [
+        {
+            "_id": "5e593b11674aef8330ca6ad6",
+            "address": [],
+            "contact": [],
+            "holder": [
+                "4 đội công tác xã hội trường đh sư phạm kỹ thuật tp . h",
+                "do "
+            ],
+            "joiner": [],
+            "name_activity": [
+                "đêm vui tất niên tết ấm áp",
+                "c đêm vui tất niên tết ấm "
+            ],
+            "name_place": [
+                "i sân cờ việt đ"
+            ],
+            "register": [],
+            "reward": [
+                " thắt chặt tình đoàn kết , giao lưu gắn bó giữa mọi người và tạo ra một không khí tết ấm áp vui v",
+                "ợc tham gia các trò chơi đầy kịch t",
+                "để giảm stress trong những ngày học tập , thi cử căng thẳng vừa qua và đón năm mới với đầy may mắn , bình an bên gia đình , bè ",
+                "ng quà lộc đầu năm mang đầy ý ng"
+            ],
+            "time": [
+                "c 17h30 , ngày 15/01/20"
+            ],
+            "time_works_place_address_mapping": [
+                {
+                    "address": "trần duy hưng",
+                    "name_place": "nhà nghỉ",
+                    "time": "10h",
+                    "works": "cua gái"
+                },
+                {
+                    "address": "lý thường kiệt",
+                    "name_place": "hotel",
+                    "time": "10h",
+                    "works": "cua trai"
+                }
+            ],
+            "type_activity": [],
+            "works": [
+                "ng thưởng thức một đêm ca nhạc đậm chất tết , vui vẻ , sôi động do đội dày công dàn d",
+                "ức ca hát , nhảy múa cùng mọi ng"
+            ]
+        }
+    ],
+    "code": 200,
+    "message": "activity found"
+}
+```
+## Error Response
+
+`
+Khi không có bài đăng nào trong database thỏa điều kiện.
+`
+```json
+{
+    "activities": [],
+    "code": 404,
+    "message": "activity not found"
 }
 ```

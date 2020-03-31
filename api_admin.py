@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify
 from flask_pymongo import PyMongo
 from flask_cors import CORS
 from bson.objectid import ObjectId
-
+import re
 app = Flask(__name__)
 CORS(app)
 
@@ -13,6 +13,27 @@ CORS(app)
 app.config["MONGO_URI"] = "mongodb://caochanhduong:bikhungha1@ds261626.mlab.com:61626/activity?retryWrites=false"
 mongo = PyMongo(app)
 
+
+def convert_to_regex_constraint(constraints):
+    list_and_out = []
+    list_and_in = []
+    ele_match_obj = {}
+    list_or = []
+    for k,values in constraints.items():
+        list_pat = []
+        for value in values:
+            list_pat.append(re.compile(".*{0}.*".format(value)))
+        # regex_constraint_dict[k] = {"$all":list_pat}
+        if k not in ["works","name_place","address","time"]:
+            list_and_out.append({k:{"$all":list_pat}})
+        else:
+            list_and_in.append({k:{"$all":list_pat}})
+            ele_match_obj[k] = {"$all":list_pat}
+    if list_and_in != [] :
+        list_or = [{"$and":list_and_in},{"time_works_place_address_mapping":{"$all":[{"$elemMatch":ele_match_obj}]}}]
+        list_and_out.append({"$or" : list_or})
+    regex_constraint_dict = {"$and":list_and_out}
+    return regex_constraint_dict
 
 def msg(code, mess=None):
     if code == 200 and mess is None:
@@ -114,6 +135,25 @@ def update_activity():
     activity["_id"] = ObjectId(activity["_id"])
     mongo.db.activities.insert_one(activity)
     return jsonify({"code":200,"message":"update success"})
+
+@app.route("/api/server-cse-assistant-admin/activities/filter", methods=['POST'])
+def filter_activity():
+    input_data = request.json
+    if "condition" not in input_data:
+        return jsonify({"code": 400, "message":"condition can not be None"})
+    condition = input_data["condition"]
+    regex_constraint = convert_to_regex_constraint(condition)
+    activities = mongo.db.activities.find(regex_constraint,limit=20)
+    result = []
+    print(activities)
+        
+    for activity in activities:
+        #đổi từ object id sang string và dùng id đó làm key (thay vì dùng index của mảng để làm key vì không xác định đc index)
+        activity["_id"] = str(activity["_id"])
+        result.append(activity)
+    if result == [] :
+        return jsonify({"code": 404, "message": "activity not found","activities":[]})
+    return jsonify({"code":200,"message":"activity found","activities":result})
 
 
 if __name__ == '__main__':
