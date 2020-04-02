@@ -25,9 +25,11 @@ Example: /api/server-cse-assistant-admin/activities/5e593b0e674aef8330ca6ad4
 ## Body Request
 
 ## Success Response
+`
+code: 200
+`
 ```json
 {
-    "code": 200,
     "message": {
         "_id": "5e593b0e674aef8330ca6ad4",
         "address": [],
@@ -72,20 +74,20 @@ Example: /api/server-cse-assistant-admin/activities/5e593b0e674aef8330ca6ad4
 ## Error Response
 
 `
-Khi _id không hợp lệ.
+code: 400 (Khi _id không hợp lệ).
 `
+
 ```json
 {
-    "code": 400,
     "message": "invalid id"
 }
 ```
 `
-Khi bài đăng có _id không tồn tại.
+code: 404 (Khi bài đăng có _id không tồn tại).
 `
 ```json
 {
-    "code": 404,
+    
     "message": "activity not found"
 }
 ```
@@ -110,29 +112,29 @@ Example: /api/server-cse-assistant-admin/activities/5e593b0e674aef8330ca6ad4
 ## Body Request
 
 ## Success Response
+`
+code: 200
+`
 ```json
 {
-    "code": 200,
     "message": "delete success"
 }
 ```
 ## Error Response
 
 `
-Khi _id không hợp lệ.
+    code: 400 (Khi _id không hợp lệ).
 `
 ```json
 {
-    "code": 400,
     "message": "invalid id"
 }
 ```
 `
-Khi bài đăng có _id không tồn tại.
+code: 404 (Khi bài đăng có _id không tồn tại).
 `
 ```json
 {
-    "code": 404,
     "message": "activity not found"
 }
 ```
@@ -150,9 +152,11 @@ ___
 ## Body Request
 
 ## Success Response
+`
+code: 200
+`
 ```json
 {
-    "code": 200,
     "message": [
         {
             "_id": "5e593b11674aef8330ca6ad6",
@@ -193,11 +197,10 @@ ___
 ## Error Response
 
 `
-Khi không có bài đăng nào trong database.
+code: 404 (Khi không có bài đăng nào trong database).
 `
 ```json
 {
-    "code": 404,
     "message": "activities not found"
 }
 ```
@@ -255,9 +258,11 @@ Thêm 1 bài đăng.
 }
 ```
 ## Success Response
+`
+code: 200
+`
 ```json
 {
-    "code": 200,
     "message": "insert success",
     "id":"5e593b11674aef8330ca6ad6"
 }
@@ -268,20 +273,18 @@ id: id của bài đăng vừa thêm.
 ## Error Response
 
 `
-Khi thêm thất bại.
+code: 400 (Khi thêm thất bại).
 `
 ```json
 {
-    "code": 400,
     "message": "insert fail"
 }
 ```
 `
-Khi request không có key "activity"
+code: 400 (Khi request không có key "activity")
 `
 ```json
 {
-    "code": 400,
     "message": "activity can not be None"
 }
 ```
@@ -344,29 +347,29 @@ Cập nhật 1 bài đăng.
 Lưu ý là cập nhật thì "activity" có "_id" còn insert thì không.
 `
 ## Success Response
+`
+code: 200
+`
 ```json
 {
-    "code": 200,
     "message": "update success"
 }
 ```
 ## Error Response
 
 `
-Khi "_id" truyền vào không tồn tại.
+code: 400 (Khi "_id" truyền vào không tồn tại).
 `
 ```json
 {
-    "code": 400,
     "message": "activity's _id not exist"
 }
 ```
 `
-Khi request không có key "activity"
+code: 400 (Khi request không có key "activity").
 `
 ```json
 {
-    "code": 400,
     "message": "activity can not be None"
 }
 ```
@@ -392,9 +395,11 @@ Example: /api/server-cse-assistant-admin/activities/page/1 (lấy trang 1)
 ## Body Request
 
 ## Success Response
+`
+code: 200
+`
 ```json
 {
-    "code": 200,
     "current_page": 2,
     "per_page": 20,
     "total": 923,
@@ -465,20 +470,16 @@ Example: /api/server-cse-assistant-admin/activities/page/1 (lấy trang 1)
 ## Error Response
 
 `
-Khi không có bài đăng nào trong database.
+code: 404 (Khi không có bài đăng nào trong database).
 `
 ```json
 {
-    "code":404,
-    "activities": [],
-    "total":0,
-    "per_page":20,
-    "current_page":0
+    "message": "activity not found"
 }
 ```
 
 ___
-# `POST /api/server-cse-assistant-admin/activities/filter`
+# `POST /api/server-cse-assistant-admin/activities/filter/page/:page`
 
 ## Goals
 `
@@ -487,8 +488,9 @@ Lọc các bài đăng theo điều kiện, giới hạn trả về 20 bài đă
 ## Required Header
 
 ## Param Request
-
-
+`
+page: số  thứ tự trang (đếm từ 1)
+`
 ## Body Request
 ```json
 {
@@ -502,6 +504,10 @@ Lọc các bài đăng theo điều kiện, giới hạn trả về 20 bài đă
 condition: object json chứa key và value của các điều kiện (dạng key: list)
 `
 ## Success Response
+`
+code: 200
+`
+
 ```json
 {
     "activities": [
@@ -552,19 +558,19 @@ condition: object json chứa key và value của các điều kiện (dạng ke
             ]
         }
     ],
-    "code": 200,
-    "message": "activity found"
+    "message": "activity found",
+    "total":1,
+    "per_page":20,
+    "current_page":1
 }
 ```
 ## Error Response
 
 `
-Khi không có bài đăng nào trong database thỏa điều kiện.
+code: 404 (Khi không có bài đăng nào trong database thỏa điều kiện).
 `
 ```json
 {
-    "activities": [],
-    "code": 404,
-    "message": "activity not found"
+  "message": "activity not found"
 }
 ```

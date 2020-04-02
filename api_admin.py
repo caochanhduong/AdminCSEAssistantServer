@@ -13,6 +13,20 @@ CORS(app)
 app.config["MONGO_URI"] = "mongodb://caochanhduong:bikhungha1@ds261626.mlab.com:61626/activity?retryWrites=false"
 mongo = PyMongo(app)
 
+class ServerException(Exception):
+    status_code = 400
+
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
 
 def convert_to_regex_constraint(constraints):
     list_and_out = []
@@ -57,18 +71,24 @@ def url_error(e):
 def server_error(e):
     return msg(500, "SERVER ERROR")
 
+@app.errorhandler(ServerException)
+def handle_invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
+
 
 @app.route("/api/server-cse-assistant-admin/activities/<_id>", methods=['GET'])
 def activity_detail(_id):
     print(_id)
     if _id == "" or len(_id)!=24:
-        return msg(400, "invalid id")
+        raise ServerException('invalid id', status_code=400)
     activity = mongo.db.activities.find_one({"_id":ObjectId(_id)})
 
     if activity != None:
         activity["_id"] = _id
-        return jsonify({"code": 200, "message": activity})
-    return jsonify({"code":404,"message":"activity not found"})
+        return jsonify({"message": activity})
+    raise ServerException('activity not found', status_code=404)
 
 @app.route("/api/server-cse-assistant-admin/activities/page/<page>", methods=['GET'])
 def activities_page(page):
@@ -83,20 +103,20 @@ def activities_page(page):
         activity["_id"] = str(activity["_id"])
         result.append(activity)
     if activity != None:
-        return jsonify({"code": 200, "activities": result,"total":total,"per_page":per_page,"current_page":current_page})
-    return jsonify({"code":404,"activities": [],"total":0,"per_page":per_page,"current_page":0})
+        return jsonify({"activities": result,"total":total,"per_page":per_page,"current_page":current_page})
+    raise ServerException('activity not found', status_code=404)
 
 @app.route("/api/server-cse-assistant-admin/activities/<_id>", methods=['DELETE'])
 def delete_activity(_id):
     print(_id)
     if _id == "" or len(_id)!=24:
-        return msg(400, "invalid id")
+        raise ServerException('invalid id', status_code=400)
     activity = mongo.db.activities.find_one({"_id" : ObjectId(_id)})
     
     if activity != None:
         result = mongo.db.activities.delete_one({"_id" : activity["_id"]})
-        return jsonify({"code": 200, "message": "delete success"})
-    return jsonify({"code":404,"message":"activity not found"})
+        return jsonify({"message": "delete success"})
+    raise ServerException("activity not found", status_code=404)
 
 @app.route("/api/server-cse-assistant-admin/activities", methods=['GET'])
 def get_all_activities():
@@ -107,43 +127,47 @@ def get_all_activities():
         activity["_id"] = str(activity["_id"])
         result.append(activity)
     if activity != None:
-        return jsonify({"code": 200, "message": result})
-    return jsonify({"code":404,"message":"activities not found"})
+        return jsonify({"message": result})
+    raise ServerException('activities not found', status_code=404)
 
 @app.route("/api/server-cse-assistant-admin/activities", methods=['POST'])
 def add_activity():
     input_data = request.json
     if "activity" not in input_data:
-        return jsonify({"code": 400, "message":"activity can not be None"})
+        raise ServerException('activity can not be None', status_code=400)
     activity = input_data["activity"]
     insert_id = mongo.db.activities.insert_one(activity).inserted_id
     if insert_id != None:
-        return jsonify({"code": 200, "message": "insert success","id":str(insert_id)})
-    return jsonify({"code":400,"message":"insert fail","id":"null"})
+        return jsonify({"message": "insert success","id":str(insert_id)})
+    raise ServerException('insert fail', status_code=400)
 
 @app.route("/api/server-cse-assistant-admin/activities", methods=['PUT'])
 def update_activity():
     input_data = request.json
     if "activity" not in input_data:
-        return jsonify({"code": 400, "message":"activity can not be None"})
+        raise ServerException('activity can not be None', status_code=400)
     activity = input_data["activity"]
     res = mongo.db.activities.find_one({"_id" : ObjectId(activity["_id"])})
     if res == None:
-        return jsonify({"code":400,"message":"activity's _id not exist"})
+        raise ServerException("activity's _id not exist", status_code=400)
     
     mongo.db.activities.delete_one({"_id" : ObjectId(activity["_id"])})
     activity["_id"] = ObjectId(activity["_id"])
     mongo.db.activities.insert_one(activity)
-    return jsonify({"code":200,"message":"update success"})
+    return jsonify({"message":"update success"})
 
-@app.route("/api/server-cse-assistant-admin/activities/filter", methods=['POST'])
-def filter_activity():
+@app.route("/api/server-cse-assistant-admin/activities/filter/page/<page>", methods=['POST'])
+def filter_activity(page):
     input_data = request.json
     if "condition" not in input_data:
-        return jsonify({"code": 400, "message":"condition can not be None"})
+        raise ServerException('condition can not be None', status_code=400)
     condition = input_data["condition"]
     regex_constraint = convert_to_regex_constraint(condition)
-    activities = mongo.db.activities.find(regex_constraint,limit=20)
+    total = mongo.db.activities.find(regex_constraint).count()
+    per_page = 20
+    current_page = int(page)
+    activities = mongo.db.activities.find(regex_constraint,limit = 20,skip = per_page*(current_page - 1))
+
     result = []
     print(activities)
         
@@ -152,8 +176,8 @@ def filter_activity():
         activity["_id"] = str(activity["_id"])
         result.append(activity)
     if result == [] :
-        return jsonify({"code": 404, "message": "activity not found","activities":[]})
-    return jsonify({"code":200,"message":"activity found","activities":result})
+        raise ServerException('activity not found', status_code=404)
+    return jsonify({"message":"activity found","activities": result,"total":total,"per_page":per_page,"current_page":current_page})
 
 
 if __name__ == '__main__':
