@@ -28,50 +28,63 @@ class ServerException(Exception):
         rv['message'] = self.message
         return rv
 
-    def convert_to_regex_constraint(constraints):
-        list_and_out = []
-        list_and_in = []
-        ele_match_obj = {}
-        list_or = []
-        regex_constraint_dict = {}
-        for k,values in constraints.items():
-            if k not in list_map_key:
-                list_pattern = []
-                for value in values:
-                    list_pattern.append(re.compile(".*{0}.*".format(value)))
-                if list_pattern != []:
-                    list_and_out.append({k: {"$all": list_pattern}})
-            else:
-                for value in values:
-                    list_and_in.append({
-                        "$or" : [
-                                    {
-                                        k: {
-                                            "$all": [re.compile(".*{0}.*".format(value))]
-                                        }
-                                    },
-                                    {    
-                                        "time_works_place_address_mapping": {
-                                            "$all": [
-                                                        {
-                                                            "$elemMatch": {
-                                                                    k: {
-                                                                        "$all": [re.compile(".*{0}.*".format(value))]
-                                                                    }
-                                                            }
-                                                        }
-                                                    ]
-                                        }
-                                    }
-                                ]
-                    })
+def convert_to_regex_constraint(constraints):
+    regex_constraint_dict = {}
+    for k,values in constraints.items():
+        if values != []:
+            list_pat = []
+            for value in values:
+                list_pat.append(re.compile(".*{0}.*".format(value)))
+            regex_constraint_dict[k] = {"$all":list_pat}
+        else:
+            regex_constraint_dict[k] = values
+    return regex_constraint_dict
 
-        if list_and_in != []:
-            list_and_out.append({"$and": list_and_in})
 
-        if list_and_out != []:
-            regex_constraint_dict = {"$and":list_and_out}
-        return regex_constraint_dict
+    # def convert_to_regex_constraint(constraints):
+    #     list_and_out = []
+    #     list_and_in = []
+    #     ele_match_obj = {}
+    #     list_or = []
+    #     regex_constraint_dict = {}
+    #     for k,values in constraints.items():
+    #         if k not in list_map_key:
+    #             list_pattern = []
+    #             for value in values:
+    #                 list_pattern.append(re.compile(".*{0}.*".format(value)))
+    #             if list_pattern != []:
+    #                 list_and_out.append({k: {"$all": list_pattern}})
+    #         else:
+    #             for value in values:
+    #                 list_and_in.append({
+    #                     "$or" : [
+    #                                 {
+    #                                     k: {
+    #                                         "$all": [re.compile(".*{0}.*".format(value))]
+    #                                     }
+    #                                 },
+    #                                 {    
+    #                                     "time_works_place_address_mapping": {
+    #                                         "$all": [
+    #                                                     {
+    #                                                         "$elemMatch": {
+    #                                                                 k: {
+    #                                                                     "$all": [re.compile(".*{0}.*".format(value))]
+    #                                                                 }
+    #                                                         }
+    #                                                     }
+    #                                                 ]
+    #                                     }
+    #                                 }
+    #                             ]
+    #                 })
+
+    #     if list_and_in != []:
+    #         list_and_out.append({"$and": list_and_in})
+
+    #     if list_and_out != []:
+    #         regex_constraint_dict = {"$and":list_and_out}
+    #     return regex_constraint_dict
 
 # def convert_to_regex_constraint(constraints):
 #     list_and_out = []

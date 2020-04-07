@@ -483,7 +483,7 @@ ___
 
 ## Goals
 `
-Lọc các bài đăng theo điều kiện, giới hạn trả về 20 bài đăng.
+Lọc các bài đăng theo điều kiện chung, giới hạn trả về 20 bài đăng.
 `
 ## Required Header
 
