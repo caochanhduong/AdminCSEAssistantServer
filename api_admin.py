@@ -6,12 +6,45 @@ from flask_pymongo import PyMongo
 from flask_cors import CORS
 from bson.objectid import ObjectId
 import re
+from flask_jwt import JWT, jwt_required, current_identity
+from werkzeug.security import safe_str_cmp
+import hashlib
+
+class User(object):
+    def __init__(self, id, username, password):
+        self.id = id
+        self.username = username
+        self.password = password
+
+    def __str__(self):
+        return "User(id='%s')" % self.id
+
+
+def authenticate(username, password):
+    user = mongo.db.users.find_one({"username":username})
+    if user and safe_str_cmp(user['password'], hashlib.sha256(str.encode(password)).hexdigest()):
+        user['_id'] = str(user['_id'])
+        return User(user["id"],user["username"],user["password"])
+
+def identity(payload):
+    user_id = payload['identity']
+    user = mongo.db.users.find_one({"id":user_id})
+    if user != None:
+        user['_id'] = str(user['_id'])
+        return User(user["id"],user["username"],user["password"])
+    else:
+        return user
+
 app = Flask(__name__)
 CORS(app)
 
+app.config['SECRET_KEY'] = 'super-secret'
 
 app.config["MONGO_URI"] = "mongodb://caochanhduong:bikhungha1@ds261626.mlab.com:61626/activity?retryWrites=false"
 mongo = PyMongo(app)
+
+jwt = JWT(app, authenticate, identity)
+
 
 class ServerException(Exception):
     status_code = 400
@@ -137,6 +170,7 @@ def handle_invalid_usage(error):
 
 
 @app.route("/api/server-cse-assistant-admin/activities/<_id>", methods=['GET'])
+@jwt_required()
 def activity_detail(_id):
     print(_id)
     if _id == "" or len(_id)!=24:
@@ -149,6 +183,7 @@ def activity_detail(_id):
     raise ServerException('activity not found', status_code=404)
 
 @app.route("/api/server-cse-assistant-admin/activities/page/<page>", methods=['GET'])
+@jwt_required()
 def activities_page(page):
     print(page)
     total = mongo.db.activities.count()
@@ -165,6 +200,7 @@ def activities_page(page):
     raise ServerException('activity not found', status_code=404)
 
 @app.route("/api/server-cse-assistant-admin/activities/<_id>", methods=['DELETE'])
+@jwt_required()
 def delete_activity(_id):
     print(_id)
     if _id == "" or len(_id)!=24:
@@ -177,6 +213,7 @@ def delete_activity(_id):
     raise ServerException("activity not found", status_code=404)
 
 @app.route("/api/server-cse-assistant-admin/activities", methods=['GET'])
+@jwt_required()
 def get_all_activities():
     activities = mongo.db.activities.find(limit = 10)
     result = []
@@ -189,6 +226,7 @@ def get_all_activities():
     raise ServerException('activities not found', status_code=404)
 
 @app.route("/api/server-cse-assistant-admin/activities", methods=['POST'])
+@jwt_required()
 def add_activity():
     input_data = request.json
     if "activity" not in input_data:
@@ -200,6 +238,7 @@ def add_activity():
     raise ServerException('insert fail', status_code=400)
 
 @app.route("/api/server-cse-assistant-admin/activities", methods=['PUT'])
+@jwt_required()
 def update_activity():
     input_data = request.json
     if "activity" not in input_data:
@@ -215,6 +254,7 @@ def update_activity():
     return jsonify({"message":"update success"})
 
 @app.route("/api/server-cse-assistant-admin/activities/filter/page/<page>", methods=['POST'])
+@jwt_required()
 def filter_activity(page):
     input_data = request.json
     if "condition" not in input_data:

@@ -2,6 +2,49 @@
 # Server CSE Assistant API Description
 
 
+___
+
+
+# `GET /auth`
+
+## Goals
+`Xác thực`
+
+## Required Header
+
+## Param Request
+
+## Body Request
+```json
+{
+	"username":"duongcc",
+	"password":"123"
+}
+
+```
+
+## Success Response
+`
+code: 200
+`
+```json
+{
+    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODY1Mzg1MDMsImlhdCI6MTU4NjUzODIwMywibmJmIjoxNTg2NTM4MjAzLCJpZGVudGl0eSI6MX0.PCpb6f4yrwmTCdKCa0VIp4UexcLCSOIfpBJDwOw9JrQ"
+}
+```
+## Error Response
+
+`
+code: 401 (Khi tài khoản không tồn tại).
+`
+
+```json
+{
+    "description": "Invalid credentials",
+    "error": "Bad Request",
+    "status_code": 401
+}
+```
 
 ___
 
@@ -12,6 +55,12 @@ ___
 `Trả về 1 bài đăng hoàn chỉnh theo _id`
 
 ## Required Header
+`
+Authorization : "JWT "+access_token (chuỗi 'JWT' rồi tới 1 khoảng trắng xong tới token)
+`
+
+
+Ví dụ: "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODY1MzczMDIsImlhdCI6MTU4NjUzNzAwMiwibmJmIjoxNTg2NTM3MDAyLCJpZGVudGl0eSI6MX0.QmVJ3lOX1Xm7LQCJQXmwVJKwS2_pviviu6nmzDYMhD4"
 
 ## Param Request
 `
@@ -99,6 +148,12 @@ ___
 `Xóa 1 bài đăng theo _id`
 
 ## Required Header
+`
+Authorization : "JWT "+access_token (chuỗi 'JWT' rồi tới 1 khoảng trắng xong tới token)
+`
+
+
+Ví dụ: "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODY1MzczMDIsImlhdCI6MTU4NjUzNzAwMiwibmJmIjoxNTg2NTM3MDAyLCJpZGVudGl0eSI6MX0.QmVJ3lOX1Xm7LQCJQXmwVJKwS2_pviviu6nmzDYMhD4"
 
 ## Param Request
 `
@@ -146,6 +201,13 @@ ___
 `Trả về danh sách các bài đăng (giới hạn tối đa 10 bài)`
 
 ## Required Header
+`
+Authorization : "JWT "+access_token (chuỗi 'JWT' rồi tới 1 khoảng trắng xong tới token)
+`
+
+
+Ví dụ: "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODY1MzczMDIsImlhdCI6MTU4NjUzNzAwMiwibmJmIjoxNTg2NTM3MDAyLCJpZGVudGl0eSI6MX0.QmVJ3lOX1Xm7LQCJQXmwVJKwS2_pviviu6nmzDYMhD4"
+
 
 ## Param Request
 
@@ -211,6 +273,12 @@ ___
 Thêm 1 bài đăng.
 
 ## Required Header
+`
+Authorization : "JWT "+access_token (chuỗi 'JWT' rồi tới 1 khoảng trắng xong tới token)
+`
+
+
+Ví dụ: "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODY1MzczMDIsImlhdCI6MTU4NjUzNzAwMiwibmJmIjoxNTg2NTM3MDAyLCJpZGVudGl0eSI6MX0.QmVJ3lOX1Xm7LQCJQXmwVJKwS2_pviviu6nmzDYMhD4"
 
 ## Param Request
 
@@ -296,6 +364,13 @@ ___
 Cập nhật 1 bài đăng. 
 
 ## Required Header
+`
+Authorization : "JWT "+access_token (chuỗi 'JWT' rồi tới 1 khoảng trắng xong tới token)
+`
+
+
+Ví dụ: "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODY1MzczMDIsImlhdCI6MTU4NjUzNzAwMiwibmJmIjoxNTg2NTM3MDAyLCJpZGVudGl0eSI6MX0.QmVJ3lOX1Xm7LQCJQXmwVJKwS2_pviviu6nmzDYMhD4"
+
 
 ## Param Request
 
@@ -381,6 +456,13 @@ ___
 Lấy về các bài đăng theo số trang, mỗi trang 20 bài đăng.
 
 ## Required Header
+`
+Authorization : "JWT "+access_token (chuỗi 'JWT' rồi tới 1 khoảng trắng xong tới token)
+`
+
+
+Ví dụ: "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODY1MzczMDIsImlhdCI6MTU4NjUzNzAwMiwibmJmIjoxNTg2NTM3MDAyLCJpZGVudGl0eSI6MX0.QmVJ3lOX1Xm7LQCJQXmwVJKwS2_pviviu6nmzDYMhD4"
+
 
 ## Param Request
 `
@@ -486,6 +568,13 @@ ___
 Lọc các bài đăng theo điều kiện chung, giới hạn trả về 20 bài đăng.
 `
 ## Required Header
+`
+Authorization : "JWT "+access_token (chuỗi 'JWT' rồi tới 1 khoảng trắng xong tới token)
+`
+
+
+Ví dụ: "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODY1MzczMDIsImlhdCI6MTU4NjUzNzAwMiwibmJmIjoxNTg2NTM3MDAyLCJpZGVudGl0eSI6MX0.QmVJ3lOX1Xm7LQCJQXmwVJKwS2_pviviu6nmzDYMhD4"
+
 
 ## Param Request
 `
