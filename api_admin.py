@@ -209,6 +209,7 @@ def delete_activity(_id):
     
     if activity != None:
         result = mongo.db.activities.delete_one({"_id" : activity["_id"]})
+        mongo.db.dictionary.delete_many({"activity_id":_id})
         return jsonify({"message": "delete success"})
     raise ServerException("activity not found", status_code=404)
 
@@ -232,7 +233,18 @@ def add_activity():
     if "activity" not in input_data:
         raise ServerException('activity can not be None', status_code=400)
     activity = input_data["activity"]
+    
     insert_id = mongo.db.activities.insert_one(activity).inserted_id
+    for key in list(activity.keys()):
+        if key not in ["time_works_place_address_mapping","_id"]:
+            for value in activity[key]:
+                mongo.db.dictionary.insert_one({'activity_id':str(insert_id),'value':value,'type':key})
+        elif key == "time_works_place_address_mapping":
+            for map_obj in activity[key]:
+                for key_obj in list(map_obj.keys()):
+                    for value in map_obj[key_obj]:
+                        mongo.db.dictionary.insert_one({'activity_id':str(insert_id),'value':value,'type':key_obj})
+
     if insert_id != None:
         return jsonify({"message": "insert success","id":str(insert_id)})
     raise ServerException('insert fail', status_code=400)
@@ -247,10 +259,20 @@ def update_activity():
     res = mongo.db.activities.find_one({"_id" : ObjectId(activity["_id"])})
     if res == None:
         raise ServerException("activity's _id not exist", status_code=400)
-    
     mongo.db.activities.delete_one({"_id" : ObjectId(activity["_id"])})
+    mongo.db.dictionary.delete_many({"activity_id":activity["_id"]})
     activity["_id"] = ObjectId(activity["_id"])
     mongo.db.activities.insert_one(activity)
+    for key in list(activity.keys()):
+        if key not in ["time_works_place_address_mapping","_id"]:
+            for value in activity[key]:
+                mongo.db.dictionary.insert_one({'activity_id':str(activity["_id"]),'value':value,'type':key})
+        elif key == "time_works_place_address_mapping":
+            for map_obj in activity[key]:
+                for key_obj in list(map_obj.keys()):
+                    for value in map_obj[key_obj]:
+                        mongo.db.dictionary.insert_one({'activity_id':str(activity["_id"]),'value':value,'type':key_obj})
+
     return jsonify({"message":"update success"})
 
 @app.route("/api/server-cse-assistant-admin/activities/filter/page/<page>", methods=['POST'])
