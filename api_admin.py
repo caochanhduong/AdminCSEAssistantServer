@@ -9,6 +9,7 @@ import re
 from flask_jwt import JWT, jwt_required, current_identity
 from werkzeug.security import safe_str_cmp
 import hashlib
+import datetime
 
 class User(object):
     def __init__(self, id, username, password):
@@ -39,6 +40,7 @@ app = Flask(__name__)
 CORS(app)
 
 app.config['SECRET_KEY'] = 'super-secret'
+app.config['JWT_EXPIRATION_DELTA'] = datetime.timedelta(days=1)
 
 app.config["MONGO_URI"] = "mongodb://caochanhduong:bikhungha1@ds261626.mlab.com:61626/activity?retryWrites=false"
 mongo = PyMongo(app)
@@ -274,6 +276,11 @@ def update_activity():
                         mongo.db.dictionary.insert_one({'activity_id':str(activity["_id"]),'value':value,'type':key_obj})
 
     return jsonify({"message":"update success"})
+
+@app.route("/api/server-cse-assistant-admin/valid-token", methods=['GET'])
+@jwt_required()
+def valid_token():
+    return jsonify({"message":"token valid"})
 
 @app.route("/api/server-cse-assistant-admin/activities/filter/page/<page>", methods=['POST'])
 @jwt_required()

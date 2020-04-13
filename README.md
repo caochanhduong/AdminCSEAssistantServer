@@ -663,3 +663,62 @@ code: 404 (Khi không có bài đăng nào trong database thỏa điều kiện)
   "message": "activity not found"
 }
 ```
+___
+# `GET /api/server-cse-assistant-admin/valid-token`
+
+## Goals
+`
+Kiểm tra token có hợp lệ không.
+`
+## Required Header
+`
+Authorization : "JWT "+access_token (chuỗi 'JWT' rồi tới 1 khoảng trắng xong tới token)
+`
+
+
+Ví dụ: "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODY1MzczMDIsImlhdCI6MTU4NjUzNzAwMiwibmJmIjoxNTg2NTM3MDAyLCJpZGVudGl0eSI6MX0.QmVJ3lOX1Xm7LQCJQXmwVJKwS2_pviviu6nmzDYMhD4"
+
+
+## Param Request
+
+## Body Request
+
+## Success Response
+`
+code: 200
+`
+
+
+```json
+{
+    "message": "token valid"
+}
+```
+## Error Response
+
+`
+code: 401 
+`
+
+```json
+{
+    "description": "Signature verification failed",
+    "error": "Invalid token",
+    "status_code": 401
+}
+```
+(trường hợp token không đúng)
+
+`
+code: 401 
+`
+
+```json
+{
+    "description": "Signature has expired",
+    "error": "Invalid token",
+    "status_code": 401
+}
+```
+(trường hợp token hết hạn)
+
