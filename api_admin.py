@@ -137,20 +137,21 @@ def compound2unicode(text):
   return text
 
 def preprocess_message(message):
-    message = message.lower()
-    message = message.replace(',', ' , ')
-    message = message.replace('.', ' . ')
-    message = message.replace('!', ' ! ')
-    message = message.replace('&', ' & ')
-    message = message.replace('?', ' ? ')
-    message = message.replace('-', ' - ')
-    message = message.replace('(', ' ( ')
-    message = message.replace(')', ' ) ')
-    message = compound2unicode(message)
-    list_token = message.split(' ')
-    while '' in list_token:
-        list_token.remove('')
-    message = ' '.join(list_token)
+    if isinstance(message,str):
+        message = message.lower()
+        message = message.replace(',', ' , ')
+        message = message.replace('.', ' . ')
+        message = message.replace('!', ' ! ')
+        message = message.replace('&', ' & ')
+        message = message.replace('?', ' ? ')
+        message = message.replace('-', ' - ')
+        message = message.replace('(', ' ( ')
+        message = message.replace(')', ' ) ')
+        message = compound2unicode(message)
+        list_token = message.split(' ')
+        while '' in list_token:
+            list_token.remove('')
+        message = ' '.join(list_token)
     return message
 
 class User(object):
