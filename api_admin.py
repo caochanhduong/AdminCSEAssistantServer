@@ -10,7 +10,7 @@ from flask_jwt import JWT, jwt_required, current_identity
 from werkzeug.security import safe_str_cmp
 import hashlib
 import datetime
-
+from time_normalizer import convert_atom_time
 
 def compound2unicode(text):
   #https://gist.github.com/redphx/9320735`
@@ -380,7 +380,7 @@ def add_activity():
     activity = input_data["activity"]
     ## chuẩn hóa trước khi insert
     for key in list(activity.keys()):
-        if key not in ["time_works_place_address_mapping","_id"]:
+        if key not in ["time_works_place_address_mapping","_id","time"]:
             for i in range(len(activity[key])):
                 activity[key][i] = preprocess_message(activity[key][i])
         elif key == "time_works_place_address_mapping":
@@ -391,14 +391,65 @@ def add_activity():
                         
     insert_id = mongo.db.activities.insert_one(activity).inserted_id
     for key in list(activity.keys()):
-        if key not in ["time_works_place_address_mapping","_id"]:
+        if key not in ["time_works_place_address_mapping","_id","time"]:
             for value in activity[key]:
                 mongo.db.dictionary.insert_one({'activity_id':str(insert_id),'value':value,'type':key})
         elif key == "time_works_place_address_mapping":
             for map_obj in activity[key]:
                 for key_obj in list(map_obj.keys()):
-                    for value in map_obj[key_obj]:
-                        mongo.db.dictionary.insert_one({'activity_id':str(insert_id),'value':value,'type':key_obj})
+                    if key_obj != "time":
+                        for value in map_obj[key_obj]:
+                            mongo.db.dictionary.insert_one({'activity_id':str(insert_id),'value':value,'type':key_obj})
+
+    if insert_id != None:
+        return jsonify({"message": "insert success","id":str(insert_id)})
+    raise ServerException('insert fail', status_code=400)
+
+@app.route("/api/server-cse-assistant-admin/activities-ner", methods=['POST'])
+@jwt_required()
+def add_activity_ner():
+    input_data = request.json
+    if "activity" not in input_data:
+        raise ServerException('activity can not be None', status_code=400)
+    activity = input_data["activity"]
+    ## chuẩn hóa trước khi insert
+    for key in list(activity.keys()):
+        if key not in ["time_works_place_address_mapping","_id","time"]:
+            for i in range(len(activity[key])):
+                activity[key][i] = preprocess_message(activity[key][i])
+        elif key == "time":
+            result_time_int = []
+            for i in range(len(activity[key])):
+                preprocess_time_int = convert_atom_time(preprocess_message(activity[key][i]))
+                if preprocess_time_int != None:
+                    result_time_int.append(preprocess_time_int)
+            activity[key] = result_time_int
+        elif key == "time_works_place_address_mapping":
+            for j in range(len(activity[key])):
+                for key_obj in list(activity[key][j].keys()):
+                    if key_obj != "time":
+                        for i in range(len(activity[key][j][key_obj])):
+                            activity[key][j][key_obj][i] = preprocess_message(activity[key][j][key_obj][i])
+                    else:
+                        result_time_obj_int = []
+                        for i in range(len(activity[key][j][key_obj])):
+                            preprocess_time_obj_int = convert_atom_time(preprocess_message(activity[key][j][key_obj][i]))
+                            if preprocess_time_obj_int != None:
+                                result_time_obj_int.append(preprocess_time_obj_int)
+                        activity[key][j][key_obj] = result_time_obj_int
+
+                        
+    insert_id = mongo.db.activities.insert_one(activity).inserted_id
+    for key in list(activity.keys()):
+        if key not in ["time_works_place_address_mapping","_id","time"]:
+            for value in activity[key]:
+                mongo.db.dictionary.insert_one({'activity_id':str(insert_id),'value':value,'type':key})
+        elif key == "time_works_place_address_mapping":
+            for map_obj in activity[key]:
+                for key_obj in list(map_obj.keys()):
+                    if key_obj != "time":
+                        for value in map_obj[key_obj]:
+                            mongo.db.dictionary.insert_one({'activity_id':str(insert_id),'value':value,'type':key_obj})
 
     if insert_id != None:
         return jsonify({"message": "insert success","id":str(insert_id)})
@@ -433,14 +484,15 @@ def update_activity():
     activity["_id"] = ObjectId(activity["_id"])
     mongo.db.activities.insert_one(activity)
     for key in list(activity.keys()):
-        if key not in ["time_works_place_address_mapping","_id"]:
+        if key not in ["time_works_place_address_mapping","_id","time"]:
             for value in activity[key]:
                 mongo.db.dictionary.insert_one({'activity_id':str(activity["_id"]),'value':value,'type':key})
         elif key == "time_works_place_address_mapping":
             for map_obj in activity[key]:
                 for key_obj in list(map_obj.keys()):
-                    for value in map_obj[key_obj]:
-                        mongo.db.dictionary.insert_one({'activity_id':str(activity["_id"]),'value':value,'type':key_obj})
+                    if key_obj != "time":
+                        for value in map_obj[key_obj]:
+                            mongo.db.dictionary.insert_one({'activity_id':str(activity["_id"]),'value':value,'type':key_obj})
 
     return jsonify({"message":"update success"})
 

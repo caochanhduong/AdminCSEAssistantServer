@@ -358,6 +358,97 @@ code: 400 (Khi request không có key "activity")
 ```
 
 ___
+# `POST /api/server-cse-assistant-admin/activities-ner`
+
+## Goals
+Thêm 1 bài đăng từ NER. (thời gian nhập vào là chuỗi, chuẩn hóa sang int trước khi insert vào database)
+
+## Required Header
+`
+Authorization : "JWT "+access_token (chuỗi 'JWT' rồi tới 1 khoảng trắng xong tới token)
+`
+
+
+Ví dụ: "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODY1MzczMDIsImlhdCI6MTU4NjUzNzAwMiwibmJmIjoxNTg2NTM3MDAyLCJpZGVudGl0eSI6MX0.QmVJ3lOX1Xm7LQCJQXmwVJKwS2_pviviu6nmzDYMhD4"
+
+## Param Request
+
+## Body Request
+```json
+{
+	"activity":{
+            "address": [],
+            "contact": [],
+            "holder": [],
+            "joiner": [
+                "sinh viên khoa học công nghệ",
+                "sinh viên sắp ra trường , mới ra trường hay đang tìm kiếm cho mình một công việc",
+                "lo lắng , sợ sệt và nghi ngờ về chính khả năng của bản thân mình",
+                "có 1001 vấn đề cùng những câu hỏi không tìm được lời giải đáp về sự khác biệt của giảng đường đại học với môi trường làm việc"
+            ],
+            "name_activity": [
+                "trạm nâng cấp phiên bản 4.0",
+                "hcm student forum",
+                "hcm student forum"
+            ],
+            "name_place": [
+                "trường đại học công nghệ thông tin tphcm"
+            ],
+            "register": [
+                "đăng ký tham gia ngay"
+            ],
+            "reward": [
+                "50 bạn đến với sự kiện sớm nhất sẽ được nhận ngay 1 quyển sách để làm nên sự nghiệp từ alpha books",
+                "cơ hội nghề nghiệp hấp dẫn có 1 - 0 - 2 đặc biệt dành riêng cho sự kiện đến từ các đơn vị đối tác chiến lược , đồng hành như bosch , tictag",
+                " \n️ nâng cấp và kết nối kiến thức , kỹ năng chuyên môn với dòng chảy 4.0.",
+                "trò chuyện cùng diễn giả và khách mời những người dồi dào kinh nghiệm về nghề nghiệp và có cái nhìn sâu sắc về ảnh hưởng sâu rộng của cách mạng 4.0 đến môi trường lao động",
+                " \n️ gặp gỡ và giao lưu kinh nghiệm với các bạn đến từ các trường đại học hàng đầu về khoa học công nghệ trên khắp địa bàn thành phố hồ chí minh",
+                "khám phá bất ngờ đến từ gameshow thú vị và giải thưởng hấp dẫn"
+            ],
+            "time": [
+                "27.10.2018"
+            ],
+            "time_work_place_mapping": [],
+            "type_activity": [
+                "sự kiện"
+            ],
+            "works": []
+        }
+}
+```
+## Success Response
+`
+code: 200
+`
+```json
+{
+    "message": "insert success",
+    "id":"5e593b11674aef8330ca6ad6"
+}
+```
+`
+id: id của bài đăng vừa thêm.
+`
+## Error Response
+
+`
+code: 400 (Khi thêm thất bại).
+`
+```json
+{
+    "message": "insert fail"
+}
+```
+`
+code: 400 (Khi request không có key "activity")
+`
+```json
+{
+    "message": "activity can not be None"
+}
+```
+
+___
 # `PUT /api/server-cse-assistant-admin/activities`
 
 ## Goals
