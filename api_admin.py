@@ -11,7 +11,8 @@ from werkzeug.security import safe_str_cmp
 import hashlib
 import datetime
 from time_normalizer import convert_atom_time
-
+from constants import list_intent, list_placeholder_message
+import random
 def compound2unicode(text):
   #https://gist.github.com/redphx/9320735`
   text = text.replace("\u0065\u0309", "\u1EBB")    # ẻ
@@ -355,6 +356,7 @@ def delete_activity(_id):
     if activity != None:
         result = mongo.db.activities.delete_one({"_id" : activity["_id"]})
         mongo.db.dictionary.delete_many({"activity_id":_id})
+        mongo.db.suggest_messages.delete_many({"activity_id":_id})
         return jsonify({"message": "delete success"})
     raise ServerException("activity not found", status_code=404)
 
@@ -390,6 +392,17 @@ def add_activity():
                         activity[key][j][key_obj][i] = preprocess_message(activity[key][j][key_obj][i])
                         
     insert_id = mongo.db.activities.insert_one(activity).inserted_id
+    if activity['name_activity'] not in [[], None]:
+        #thêm 5 câu suggest cho mỗi tên hoạt động
+        for j in range(5):
+            for name_activity in activity['name_activity']:
+                random_placeholder_message_index = random.randint(0,len(list_placeholder_message) - 1)
+                suggest_message_insert = list_placeholder_message[random_placeholder_message_index].replace("mùa hè xanh",name_activity)
+                intent_insert = list_intent[random_placeholder_message_index]
+                mongo.db.suggest_messages.insert_one({'activity_id':str(insert_id),'message':suggest_message_insert,'intent':intent_insert})
+    
+    
+    
     for key in list(activity.keys()):
         if key not in ["time_works_place_address_mapping","_id","time"]:
             for value in activity[key]:
@@ -440,6 +453,15 @@ def add_activity_ner():
 
                         
     insert_id = mongo.db.activities.insert_one(activity).inserted_id
+    if activity['name_activity'] not in [[], None]:
+        #thêm 5 câu suggest cho mỗi tên hoạt động
+        for j in range(5):
+            for name_activity in activity['name_activity']:
+                random_placeholder_message_index = random.randint(0,len(list_placeholder_message) - 1)
+                suggest_message_insert = list_placeholder_message[random_placeholder_message_index].replace("mùa hè xanh",name_activity)
+                intent_insert = list_intent[random_placeholder_message_index]
+                mongo.db.suggest_messages.insert_one({'activity_id':str(insert_id),'message':suggest_message_insert,'intent':intent_insert})
+    
     for key in list(activity.keys()):
         if key not in ["time_works_place_address_mapping","_id","time"]:
             for value in activity[key]:
@@ -481,6 +503,17 @@ def update_activity():
         raise ServerException("activity's _id not exist", status_code=400)
     mongo.db.activities.delete_one({"_id" : ObjectId(activity["_id"])})
     mongo.db.dictionary.delete_many({"activity_id":activity["_id"]})
+    mongo.db.suggest_messages.delete_many({"activity_id":activity["_id"]})
+    if activity['name_activity'] not in [[], None]:
+        #thêm 5 câu suggest cho mỗi tên hoạt động
+        for j in range(5):
+            for name_activity in activity['name_activity']:
+                random_placeholder_message_index = random.randint(0,len(list_placeholder_message) - 1)
+                suggest_message_insert = list_placeholder_message[random_placeholder_message_index].replace("mùa hè xanh",name_activity)
+                intent_insert = list_intent[random_placeholder_message_index]
+                mongo.db.suggest_messages.insert_one({'activity_id':activity["_id"],'message':suggest_message_insert,'intent':intent_insert})
+    
+    
     activity["_id"] = ObjectId(activity["_id"])
     mongo.db.activities.insert_one(activity)
     for key in list(activity.keys()):
