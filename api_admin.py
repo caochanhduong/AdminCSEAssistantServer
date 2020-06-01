@@ -397,9 +397,10 @@ def add_activity():
         for j in range(5):
             for name_activity in activity['name_activity']:
                 random_placeholder_message_index = random.randint(0,len(list_placeholder_message) - 1)
-                suggest_message_insert = list_placeholder_message[random_placeholder_message_index].replace("mùa hè xanh",name_activity)
-                intent_insert = list_intent[random_placeholder_message_index]
-                mongo.db.suggest_messages.insert_one({'activity_id':str(insert_id),'message':suggest_message_insert,'intent':intent_insert})
+                if list_placeholder_message[random_placeholder_message_index].find("mùa hè xanh") != -1:
+                    suggest_message_insert = list_placeholder_message[random_placeholder_message_index].replace("mùa hè xanh",name_activity)
+                    intent_insert = list_intent[random_placeholder_message_index]
+                    mongo.db.suggest_messages.insert_one({'activity_id':str(insert_id),'message':suggest_message_insert,'intent':intent_insert})
     
     
     
@@ -458,9 +459,10 @@ def add_activity_ner():
         for j in range(5):
             for name_activity in activity['name_activity']:
                 random_placeholder_message_index = random.randint(0,len(list_placeholder_message) - 1)
-                suggest_message_insert = list_placeholder_message[random_placeholder_message_index].replace("mùa hè xanh",name_activity)
-                intent_insert = list_intent[random_placeholder_message_index]
-                mongo.db.suggest_messages.insert_one({'activity_id':str(insert_id),'message':suggest_message_insert,'intent':intent_insert})
+                if list_placeholder_message[random_placeholder_message_index].find("mùa hè xanh") != -1:
+                    suggest_message_insert = list_placeholder_message[random_placeholder_message_index].replace("mùa hè xanh",name_activity)
+                    intent_insert = list_intent[random_placeholder_message_index]
+                    mongo.db.suggest_messages.insert_one({'activity_id':str(insert_id),'message':suggest_message_insert,'intent':intent_insert})
     
     for key in list(activity.keys()):
         if key not in ["time_works_place_address_mapping","_id","time"]:
@@ -509,9 +511,10 @@ def update_activity():
         for j in range(5):
             for name_activity in activity['name_activity']:
                 random_placeholder_message_index = random.randint(0,len(list_placeholder_message) - 1)
-                suggest_message_insert = list_placeholder_message[random_placeholder_message_index].replace("mùa hè xanh",name_activity)
-                intent_insert = list_intent[random_placeholder_message_index]
-                mongo.db.suggest_messages.insert_one({'activity_id':activity["_id"],'message':suggest_message_insert,'intent':intent_insert})
+                if list_placeholder_message[random_placeholder_message_index].find("mùa hè xanh") != -1:
+                    suggest_message_insert = list_placeholder_message[random_placeholder_message_index].replace("mùa hè xanh",name_activity)
+                    intent_insert = list_intent[random_placeholder_message_index]
+                    mongo.db.suggest_messages.insert_one({'activity_id':activity["_id"],'message':suggest_message_insert,'intent':intent_insert})
     
     
     activity["_id"] = ObjectId(activity["_id"])
