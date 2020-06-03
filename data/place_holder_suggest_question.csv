@@ -2,8 +2,6 @@ joiner,ai có thể tham gia mùa hè xanh vậy
 joiner,ai được tham gia mùa hè xanh vậy
 joiner,ai tham gia được mùa hè xanh nhỉ
 activity,bạn biết gì về mùa hè xanh không
-register,bạn chỉ mình đăng ký mùa hè xanh với
-contact,bạn cho mình biết cách liên lạc ban tổ chức đi
 activity,bạn cho mình biết chi tiết về mùa hè xanh đi
 register,bạn cho mình hỏi về cách thức đăng kí mùa hè xanh
 register,bạn cho mình xin cách đăng ký mùa hè xanh với ạ 
@@ -23,7 +21,6 @@ activity,bạn giới thiệu mình về mùa hè xanh đi
 activity,bạn kể cho mình biết về mùa hè xanh được không
 activity,bạn ơi cho mình hỏi mùa hè xanh là gì ạ 
 activity,bạn ơi cho xin hết thông tin về mùa hè xanh với 
-contact,bạn ơi mình liên hệ ai để lấy thêm thông tin vậy 
 activity,bạn ơi mình muốn hỏi thông tin về mùa hè xanh á
 contact,bạn ơi mình thích mùa hè xanh thì hỏi thêm thông tin ở đâu nhỉ
 activity,bạn ơi mùa hè xanh là gì vậy ạ 
@@ -48,7 +45,6 @@ joiner,cho mình hỏi đối tượng tham gia mùa hè xanh là ai ạ
 works,cho mình hỏi khi đi chiến dịch mùa hè xanh thì làm cái gì vậy bạn 
 register,cho mình hỏi làm sao đăng ký tham gia mùa hè xanh vậy
 activity,cho mình hỏi một số thông tin về mùa hè xanh đi ạ
-contact,cho mình hỏi một tí là nếu mình muốn tham gia thì cần trao đổi với người nào thế 
 joiner,cho mình hỏi mùa hè xanh đối tượng tham gia gồm những ai bạn ơi  
 works,cho mình hỏi mùa hè xanh là làm gì vậy 
 joiner,cho mình hỏi mùa hè xanh sắp tới cho những ai tham gia vậy
@@ -104,7 +100,6 @@ contact,làm sao liên hệ ban tổ chức mùa hè xanh
 register,làm sao mình tham gia mùa hè xanh nhỉ
 joiner,mà mùa hè xanh cho những đối tượng nào tham gia vậy
 contact,mình cần được ban tổ chức mùa hè xanh tư vấn thêm một số thông tin ạ 
-contact,mình cần liên hệ với bạn nào vậy bạn
 works,mình cần một số thông tin về công việc cần làm trong mùa hè xanh
 activity,mình cần một số thông tin về mùa hè xanh
 contact,mình cần thông tin liên hệ để hỏi về việc tham gia mùa hè xanh sắp tới ạ 
@@ -171,12 +166,6 @@ type_activity,mùa hè xanh là loại hoạt động kiểu gì
 type_activity,cho mình hỏi mùa hè xanh là hoạt động thuộc loại nào
 type_activity,cho mình xin thông tin kiểu hoạt động của mùa hè xanh được không
 type_activity,cho mình hỏi mùa hè xanh là hoạt động thuộc loại gì
-name_activity,cho mình xin tên hoạt động có 2 ngày ctxh với
-name_activity,cho mình xin tên hoạt động nào là hội trại đi bạn
-name_activity,cho mình hỏi tên hoạt động nào cuộc thi thế
-name_activity,tên hoạt động là chương trình là các hoạt động nào vậy
-name_activity,cho mình xin tên các hoạt động là chương trình đi
-name_activity,cho mình xin thông tin các tên hoạt động là cuộc thi đi bạn
 time,cho mình xin thông tin thời gian của mùa hè xanh
 time,cho mình hỏi mùa hè xanh diễn ra vào thời gian nào
 time,mùa hè xanh diễn ra vào lúc nào vậy
