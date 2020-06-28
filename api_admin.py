@@ -325,7 +325,9 @@ def activity_detail(_id):
 
     if activity != None:
         activity["_id"] = _id
-        return jsonify({"message": activity})
+        response = jsonify({"message": activity})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
     raise ServerException('activity not found', status_code=404)
 
 @app.route("/api/server-cse-assistant-admin/activities/page/<page>", methods=['GET'])
@@ -342,7 +344,9 @@ def activities_page(page):
         activity["_id"] = str(activity["_id"])
         result.append(activity)
     if activity != None:
-        return jsonify({"activities": result,"total":total,"per_page":per_page,"current_page":current_page})
+        response = jsonify({"activities": result,"total":total,"per_page":per_page,"current_page":current_page})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
     raise ServerException('activity not found', status_code=404)
 
 @app.route("/api/server-cse-assistant-admin/activities/<_id>", methods=['DELETE'])
@@ -357,7 +361,9 @@ def delete_activity(_id):
         result = mongo.db.activities.delete_one({"_id" : activity["_id"]})
         mongo.db.dictionary.delete_many({"activity_id":_id})
         mongo.db.suggest_messages.delete_many({"activity_id":_id})
-        return jsonify({"message": "delete success"})
+        response = jsonify({"message": "delete success"})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
     raise ServerException("activity not found", status_code=404)
 
 @app.route("/api/server-cse-assistant-admin/activities", methods=['GET'])
@@ -370,7 +376,9 @@ def get_all_activities():
         activity["_id"] = str(activity["_id"])
         result.append(activity)
     if activity != None:
-        return jsonify({"message": result})
+        response = jsonify({"message": result})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
     raise ServerException('activities not found', status_code=404)
 
 @app.route("/api/server-cse-assistant-admin/activities", methods=['POST'])
@@ -416,7 +424,9 @@ def add_activity():
                             mongo.db.dictionary.insert_one({'activity_id':str(insert_id),'value':value,'type':key_obj})
 
     if insert_id != None:
-        return jsonify({"message": "insert success","id":str(insert_id)})
+        response = jsonify({"message": "insert success","id":str(insert_id)})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
     raise ServerException('insert fail', status_code=400)
 
 @app.route("/api/server-cse-assistant-admin/activities-ner", methods=['POST'])
@@ -476,7 +486,9 @@ def add_activity_ner():
                             mongo.db.dictionary.insert_one({'activity_id':str(insert_id),'value':value,'type':key_obj})
 
     if insert_id != None:
-        return jsonify({"message": "insert success","id":str(insert_id)})
+        response = jsonify({"message": "insert success","id":str(insert_id)})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
     raise ServerException('insert fail', status_code=400)
 
 @app.route("/api/server-cse-assistant-admin/activities", methods=['PUT'])
@@ -529,13 +541,16 @@ def update_activity():
                     if key_obj != "time":
                         for value in map_obj[key_obj]:
                             mongo.db.dictionary.insert_one({'activity_id':str(activity["_id"]),'value':value,'type':key_obj})
-
-    return jsonify({"message":"update success"})
+    response = jsonify({"message":"update success"})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 @app.route("/api/server-cse-assistant-admin/valid-token", methods=['GET'])
 @jwt_required()
 def valid_token():
-    return jsonify({"message":"token valid"})
+    response = jsonify({"message":"token valid"})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 @app.route("/api/server-cse-assistant-admin/activities/filter/page/<page>", methods=['POST'])
 @jwt_required()
@@ -562,9 +577,11 @@ def filter_activity(page):
         result.append(activity)
     if result == [] :
         raise ServerException('activity not found', status_code=404)
-    return jsonify({"message":"activity found","activities": result,"total":total,"per_page":per_page,"current_page":current_page})
+    response = jsonify({"message":"activity found","activities": result,"total":total,"per_page":per_page,"current_page":current_page})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=8000)
 
