@@ -137,6 +137,103 @@ def compound2unicode(text):
   text = text.replace("\u00C2\u0303", "\u1EAA")    # Ẫ
   return text
 
+def extract_special_character_and_url(input_string):
+    # lọc sơ các bài đăng
+    emoj = re.compile("["
+        u"\U0001F600-\U0001F64F"  # emoticons
+        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+        u"\U0001F680-\U0001F6FF"  # transport & map symbols
+        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+        u"\U00002500-\U00002BEF"  # chinese char
+        u"\U00002702-\U000027B0"
+        u"\U00002702-\U000027B0"
+        u"\U000024C2-\U0001F251"
+        u"\U0001f926-\U0001f937"
+        u"\U00010000-\U0010ffff"
+        u"\u2640-\u2642" 
+        u"\u2600-\u2B55"
+        u"\u200d"
+        u"\u23cf"
+        u"\u23e9"
+        u"\u231a"
+        u"\ufe0f"  # dingbats
+        u"\u3030"
+                      "]+", re.UNICODE)
+    hash_tag_pattern = '(#([^ ])*)'
+    breakline_pattern = '(\n(\n| )+)'
+    specialBreakline_pattern = '([-—^*_+ ]([-—^*_+ ])+)'
+    dot_pattern = '(\.\.\.(\.)+)'
+    specialChar_pattern = '((:\)+)|(:D+)|(:\(+)|(:\'\(+)|(:P+)|(O:\))|(3:\))|(o.O+)|(;\)+)|(:\/ )|(>:O)|(:O+)|(-_+-)|(:\*)|(^_+^)|(8-\)+)|(8\|+)|(>:\(+)|(:v+)|(:3+)|(\(y\))|(<\(\"\))|(\(^^^\))|(==+)|(:\|\])|(:poop:)|(:putnam:)|(<3+)|(●)|(☐)|(→)|(🚀)|(▶))'
+    input_string = re.sub(emoj,'',input_string)
+    input_string = re.sub(hash_tag_pattern,'',input_string)
+    input_string = re.sub(breakline_pattern,'',input_string)
+    input_string = re.sub(specialBreakline_pattern,'',input_string)
+    input_string = re.sub(dot_pattern,'',input_string)
+    input_string = re.sub(specialChar_pattern,'',input_string)
+
+    #bat email truoc vi email trong do co link
+    first_corpus=input_string
+    email_pattern=r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+"
+    list_email=re.findall(email_pattern,input_string)
+    if list_email!=[]:
+        for x in list_email:
+            input_string=input_string.replace(x,'‱',1)
+    url_pattern_http='http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\)\,]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    list_url_http=re.findall(url_pattern_http,input_string)
+    if list_url_http!=[]:
+        for x in list_url_http:
+            input_string=input_string.replace(x,'⌫',1)
+    url_pattern_no_http='(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+'
+    list_url_no_http=re.findall(url_pattern_no_http,input_string)
+    if list_url_no_http!=[]:
+        for x in list_url_no_http:
+            input_string=input_string.replace(x,'₪',1)
+
+    input_string=input_string.replace('•','')
+    input_string = re.sub('[\{\}\_=\+\#\$\%\~\`\'\|\<\>\"\“”…*\^]','',input_string)
+    input_string = re.sub('[\,]',' , ',input_string)
+    input_string = re.sub('[\.]',' . ',input_string)
+    input_string = re.sub('[\:]',' : ',input_string)
+    input_string = re.sub('[\-]',' - ',input_string)
+    input_string = re.sub('[\?]',' ? ',input_string)
+    input_string = re.sub('[\!]',' ! ',input_string)
+    input_string = re.sub('[\(]',' ( ',input_string)
+    input_string = re.sub('[\)]',' ) ',input_string)
+    input_string = re.sub('[\&]',' & ',input_string)
+    input_string = re.sub('[\[]',' [ ',input_string)
+    input_string = re.sub('[\]]',' ] ',input_string)
+    input_string = re.sub('[\@]',' @ ',input_string)
+    input_string = re.sub('[\;]',' ; ',input_string)
+    input_string=input_string.replace('\\ud','')
+    input_string=input_string.replace('\\uc','')
+    input_string=input_string.replace('\\','')
+    token_list = input_string.split(" ")
+    while '' in token_list:
+        token_list.remove('')
+    input_string=' '.join(token_list).lower()
+    result=''
+    http_idx=0
+    no_http_idx=0
+    email_idx=0
+    for i in range(0,len(input_string)):
+        if input_string[i] not in ['⌫','₪','‱']:
+            result+=input_string[i]
+        elif input_string[i]=='⌫':
+            result+=list_url_http[http_idx]
+            http_idx=http_idx+1
+        elif input_string[i]=='₪':
+            if no_http_idx<len(list_url_no_http):
+                result+=list_url_no_http[no_http_idx]
+                no_http_idx=no_http_idx+1
+            else:
+                print("---------------------------error corpus")
+                print("---------------------------error first corpus")
+        elif input_string[i]=='‱':
+            result+=list_email[email_idx]
+            email_idx=email_idx+1
+    return result
+
+
 def preprocess_message(message):
     if isinstance(message,str):
         message = message.lower()
@@ -314,6 +411,17 @@ def handle_invalid_usage(error):
     response.status_code = error.status_code
     return response
 
+@app.route("/api/server-cse-assistant-admin/filter-corpus", methods=['POST'])
+@jwt_required()
+def filter_corpus():
+    input_data = request.json
+    if "corpus" not in input_data:
+        raise ServerException('corpus can not be None', status_code=400)
+    corpus = input_data['corpus']
+    processed_corpus = extract_special_character_and_url(corpus)
+    response = jsonify({"processed_corpus": processed_corpus})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 @app.route("/api/server-cse-assistant-admin/activities/<_id>", methods=['GET'])
 @jwt_required()
